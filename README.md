@@ -97,3 +97,6 @@
     | `api/v{version}/products/{id}` | `store.products().list("96592").execute()`
     | `api/v{version}/products/{id}/attributes` | `store.products().list("96592").attributes().execute()`
     | `api/v{version}/products/{id}/attributes?value_type={VALUE_TYPE}` | `store.products().list("96592").attributes().setValueType("text").execute()`
+ 
+ 7. Run jetty by `gradle appRun`
+ 7. Run jetty with integration test by `gradle integrationTest`
