@@ -1,6 +1,6 @@
 ## Notes
 1. tried servlet 3.0, no longer required web.xml (still included in the project, because for reference only)
-  - entry point: http://localhost:8083/rest-api-to-java-api/index.jsp
+   - entry point: http://localhost:8083/rest-api-to-java-api/index.jsp
 2. tried gretty to launch jetty9 for integration test
     ```
 
