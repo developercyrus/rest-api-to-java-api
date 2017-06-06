@@ -91,9 +91,9 @@
   - `OnlineStoreRequest` builds the REST URL, if any, with the key-value parameters stored in its `HashMap`. 
   
 
-    | ID | REST API | Java API 
-    |---|-----------|----------
-    | 1 | `api/v{version}/products` | `Products productList = store.products().execute()`
-    | 2 | `api/v{version}/products/{id}` | `Product product = store.products().list("96592").execute()`
-    | 3 | `api/v{version}/products/{id}/attributes` | `Attributes attributeList = store.products().list("96592").attributes().execute()`
-    | 4 | `api/v{version}/products/{id}/attributes?value_type={VALUE_TYPE}` | `Attributes attributeList = store.products().list("96592").attributes().setValueType("text").execute()`
+    | REST API | Java API 
+    |----------|----------
+    | `api/v{version}/products` | `Products productList = store.products().execute()`
+    | `api/v{version}/products/{id}` | `Product product = store.products().list("96592").execute()`
+    | `api/v{version}/products/{id}/attributes` | `Attributes attributeList = store.products().list("96592").attributes().execute()`
+    | `api/v{version}/products/{id}/attributes?value_type={VALUE_TYPE}` | `Attributes attributeList = store.products().list("96592").attributes().setValueType("text").execute()`
