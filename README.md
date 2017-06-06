@@ -92,7 +92,7 @@
   
 
     | ID | REST API | Java API 
-    |----------|--------|----------|----------|-------------
+    |---|-----------|----------
     | 1 | `api/v{version}/products` | `Products productList = store.products().execute()`
     | 2 | `api/v{version}/products/{id}` | `Product product = store.products().list("96592").execute()`
     | 3 | `api/v{version}/products/{id}/attributes` | `Attributes attributeList = store.products().list("96592").attributes().execute()`
