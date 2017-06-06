@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {},
+    "properties": {
+        "category": {
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "create_time": {
+            "type": "string"
+        },
+        "id": {
+            "type": "integer"
+        },
+        "modify_time": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "timezone": {
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "user_id": {
+            "type": "integer"
+        }
+    },
+    "type": "object"
+}

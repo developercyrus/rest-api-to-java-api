@@ -1,0 +1,12 @@
+{
+    "attributes": [
+        {
+            "key": {
+                "name": "material",
+                "id": 40,
+                "value_type": "text"
+            },
+            "value": "Aluminium Alloy"            
+        }
+    ]           
+}

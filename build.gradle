@@ -1,0 +1,285 @@
+/* 
+============================================================================  
+    Environment
+    1. Eclipse 4.6.1 in Windows 7 64bit
+    2. gradle-3.4.1
+       
+       
+    Setup in Development Machine
+    1. install JDK, and setup JAVA_HOME
+    2. install gradle, and setup gradle\bin in PATH
+
+
+    Config 
+    1. by command
+            gradle eclipse                   # generate library for eclipse
+    2. by eclpse
+            right click project, Gradle > Refresh Gradle Project
+    
+                          
+    Run    
+    1. Open a command prompt in the project path
+    2. gradle clean             
+    3. gradle test 
+    4. gradle build
+    5. gradle run
+    6. gradle clean test build run      
+        
+    7. gradle --stacktrace clean build appRun       #run jetty
+    8. gradle integrationTest                       #run jetty with IT
+        
+============================================================================
+*/
+
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.slf4j:slf4j-log4j12:1.7.25"
+    compile "log4j:log4j:1.2.17"
+    compile "log4j:apache-log4j-extras:1.2.17"
+    
+    // for using org.apache.logging.log4j.web.Log4jServletContextListener 
+    compile "org.apache.logging.log4j:log4j-web:2.7"
+        
+    compile "javax.servlet:javax.servlet-api:3.0.1"
+    compile "javax.servlet:jsp-api:2.0"
+    
+    compile "javax.ws.rs:javax.ws.rs-api:2.0.1"
+    
+    // use it with servlet 3.0
+    // if the container implements Servlet API older than 3.0, use "jersey-container-servlet-core"
+    compile "org.glassfish.jersey.core:jersey-server:2.25.1"
+    compile "org.glassfish.jersey.containers:jersey-container-servlet:2.25.1"
+    
+    // for using jsonschema2pojo
+    compile "org.jsonschema2pojo:jsonschema2pojo-core:0.4.34"
+    
+    // for using FileUtils
+    compile "commons-io:commons-io:2.5"
+    
+    // even more handy than jsoup
+    compile "com.m3:curly:0.5.6"
+    
+    compile "org.jsoup:jsoup:1.10.2"
+
+    testCompile 'junit:junit:4.12'
+}
+
+apply plugin: 'org.akhikhl.gretty'
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.org.akhikhl.gretty:gretty:1.4.2"
+    }
+}
+
+gretty {
+    //throws exception "Could not set unknown property 'port' for object of type org.akhikhl.gretty.GrettyExtension."
+    //port = 8083 
+    httpPort = 8083
+    contextPath = '/rest-api-to-java-api'
+    servletContainer = 'jetty9'
+    
+    loggingLevel='INFO'
+    debugPort = 5005      // default
+    debugSuspend = true   // default
+
+    httpsEnabled = true
+    httpsPort = 8443
+    sslKeyStorePath = 'some.jks'
+    sslKeyStorePassword = 'somepwd'  
+    
+    integrationTestTask = 'integrationTest'  
+}
+
+test {
+    include '**/Test*.*'
+    include '**/*Test.*'
+    exclude '**/*IT.*'
+}
+
+task integrationTest(type: Test, dependsOn: 'test') {
+    outputs.upToDateWhen { false }
+    include '**/*IT.*'
+}
+
+
+apply plugin: 'eclipse'
+
+eclipse {
+    classpath {
+        /*
+            1. This is the default behavior, https://docs.gradle.org/current/dsl/org.gradle.plugins.ide.eclipse.model.EclipseClasspath.html#org.gradle.plugins.ide.eclipse.model.EclipseClasspath:downloadSources                     
+            2. if not work, try by clearing /~[user]/.gradle/caches/*.*                
+        */
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
+
+apply plugin: 'jsonschema2pojo'
+
+buildscript {
+    repositories {
+        mavenCentral()        
+    }
+        
+    dependencies {
+        classpath 'org.jsonschema2pojo:jsonschema2pojo-gradle-plugin:0.4.34'
+    }
+}
+
+
+// Each configuration is set to the default value
+jsonSchema2Pojo {
+    // Whether to generate builder-style methods of the form withXxx(value) (that return this),
+    // alongside the standard, void-return setters.
+    generateBuilders = false
+
+    // Whether to use primitives (long, double, boolean) instead of wrapper types where possible
+    // when generating bean properties (has the side-effect of making those properties non-null).
+    usePrimitives = false
+
+    // Location of the JSON Schema file(s). This may refer to a single file or a directory of files. 
+    //source = files("${sourceSets.main.output.resourcesDir}/foo/bar/client/json/entity/generated/products.schema.json")
+    source = files("${sourceSets.main.output.resourcesDir}/foo/bar/client/json/entity/generated")
+   
+    // Target directory for generated Java source files. The plugin will add this directory to the
+    // java source set so the compiler will find and compile the newly generated source files.
+    //targetDirectory = file("${project.buildDir}/generated-sources/json2pojo")
+    targetDirectory = file("src/main/generated/foo/bar/client/json/entity/generated")
+
+    // Package name used for generated Java classes (for types where a fully qualified name has not
+    // been supplied in the schema using the 'javaType' property).
+    targetPackage = 'foo.json.client.json.entity.generated'
+
+    // The characters that should be considered as word delimiters when creating Java Bean property
+    // names from JSON property names. If blank or not set, JSON properties will be considered to
+    // contain a single word when creating Java Bean property names.
+    propertyWordDelimiters = [] as char[]
+
+    // Whether to use the java type long (or Long) instead of int (or Integer) when representing the
+    // JSON Schema type 'integer'.
+    useLongIntegers = false
+
+    // Whether to use the java type BigInteger when representing the JSON Schema type 'integer'. Note
+    // that this configuration overrides useLongIntegers
+    useBigIntegers = false
+
+    // Whether to use the java type double (or Double) instead of float (or Float) when representing
+    // the JSON Schema type 'number'.
+    useDoubleNumbers = true
+
+    // Whether to use the java type BigDecimal when representing the JSON Schema type 'number'. Note
+    // that this configuration overrides useDoubleNumbers
+    useBigDecimals = false
+
+    // Whether to include hashCode and equals methods in generated Java types.
+    includeHashcodeAndEquals = true
+
+    // Whether to include a toString method in generated Java types.
+    includeToString = true
+
+    // The style of annotations to use in the generated Java types. Supported values:
+    //  - jackson (alias of jackson2)
+    //  - jackson2 (apply annotations from the Jackson 2.x library)
+    //  - jackson1 (apply annotations from the Jackson 1.x library)
+    //  - gson (apply annotations from the Gson library)
+    //  - moshi1 (apply annotations from the Moshi 1.x library)
+    //  - none (apply no annotations at all)
+    annotationStyle = 'jackson'
+    //annotationStyle = 'none'
+
+    // A fully qualified class name, referring to a custom annotator class that implements
+    // org.jsonschema2pojo.Annotator and will be used in addition to the one chosen
+    // by annotationStyle. If you want to use the custom annotator alone, set annotationStyle to none.
+    customAnnotator = 'org.jsonschema2pojo.NoopAnnotator'
+    //customAnnotator = 'com.hktdc.catchpoint.v1.annotator.JpaAnnotator'
+    
+
+    // Whether to include JSR-303/349 annotations (for schema rules like minimum, maximum, etc) in
+    // generated Java types. Schema rules and the annotation they produce:
+    //  - maximum = @DecimalMax
+    //  - minimum = @DecimalMin
+    //  - minItems,maxItems = @Size
+    //  - minLength,maxLength = @Size
+    //  - pattern = @Pattern
+    //  - required = @NotNull
+    // Any Java fields which are an object or array of objects will be annotated with @Valid to
+    // support validation of an entire document tree.
+    includeJsr303Annotations = false
+
+    // The type of input documents that will be read. Supported values:
+    //  - jsonschema (schema documents, containing formal rules that describe the structure of json data)
+    //  - json (documents that represent an example of the kind of json data that the generated Java types
+    //          will be mapped to)
+    sourceType = 'jsonschema'
+    //sourceType = 'json'
+
+    // Whether to empty the target directory before generation occurs, to clear out all source files
+    // that have been generated previously. <strong>Be warned</strong>, when activated this option
+    // will cause jsonschema2pojo to <strong>indiscriminately delete the entire contents of the target
+    // directory (all files and folders)</strong> before it begins generating sources.
+    removeOldOutput = true
+
+    // The character encoding that should be used when writing the generated Java source files
+    outputEncoding = 'UTF-8'
+
+    // Whether to use {@link org.joda.time.DateTime} instead of {@link java.util.Date} when adding
+    // date type fields to generated Java types.
+    useJodaDates = false
+
+    // Whether to add JsonFormat annotations when using Jackson 2 that cause format "date" and "date-time"
+    // fields to be formatted as yyyy-MM-dd and yyyy-MM-dd'T'HH:mm:ss.SSSZ respectively. To customize these
+    // patterns, use customDatePattern and customDateTimePattern config options or add these inside a schema
+    // to affect an individual field
+    formatDateTimes = true
+    formatDates = true
+
+    // Whether to use commons-lang 3.x imports instead of commons-lang 2.x imports when adding equals, 
+    // hashCode and toString methods.
+    useCommonsLang3 = false
+
+    // Whether to initialize Set and List fields as empty collections, or leave them as null.
+    initializeCollections = true
+
+    // Whether to add a prefix to generated classes.
+    classNamePrefix = ""
+
+    // Whether to add a suffix to generated classes.
+    classNameSuffix = ""
+
+    // An array of strings that should be considered as file extensions and therefore not included in class names.
+    fileExtensions = [] as String[]
+
+    // Whether to generate constructors or not.
+    includeConstructors = true
+
+    // **EXPERIMENTAL** Whether to make the generated types Parcelable for Android
+    parcelable = false
+
+    // Whether to make the generated types Serializable
+    serializable = false
+
+    // Whether to include getters/setters or to omit these accessor methods and create public fields instead.
+    includeAccessors = true
+
+    // Whether to include dynamic getters, setters, and builders or to omit these methods.
+    includeDynamicAccessors = false
+}
+
+
+

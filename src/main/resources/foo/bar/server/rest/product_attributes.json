@@ -1,0 +1,28 @@
+{
+    "attributes": [
+        {
+            "key": {
+                "name": "color",
+                "id": 175,
+                "value_type": "option"
+            },
+            "value": "1"          
+        },
+        {
+            "key": {
+                "name": "color",
+                "id": 175,
+                "value_type": "option"
+            },
+            "value": "2"          
+        },
+        {
+            "key": {
+                "name": "material",
+                "id": 40,
+                "value_type": "text"
+            },
+            "value": "Aluminium Alloy"            
+        }
+    ]           
+}
