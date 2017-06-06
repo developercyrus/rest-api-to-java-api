@@ -93,7 +93,7 @@
 
     | REST API | Java API 
     |----------|----------
-    | `api/v{version}/products` | `Products productList = store.products().execute()`
-    | `api/v{version}/products/{id}` | `Product product = store.products().list("96592").execute()`
-    | `api/v{version}/products/{id}/attributes` | `Attributes attributeList = store.products().list("96592").attributes().execute()`
-    | `api/v{version}/products/{id}/attributes?value_type={VALUE_TYPE}` | `Attributes attributeList = store.products().list("96592").attributes().setValueType("text").execute()`
+    | `api/v{version}/products` | `store.products().execute()`
+    | `api/v{version}/products/{id}` | `store.products().list("96592").execute()`
+    | `api/v{version}/products/{id}/attributes` | `store.products().list("96592").attributes().execute()`
+    | `api/v{version}/products/{id}/attributes?value_type={VALUE_TYPE}` | `store.products().list("96592").attributes().setValueType("text").execute()`
